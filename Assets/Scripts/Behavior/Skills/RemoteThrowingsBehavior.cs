@@ -201,9 +201,12 @@ namespace Behavior.Skills
             }
             else if (_effectCategory == EffectCategory.Explosion)
             {
-                var mstbhv = other.GetComponent<MonsterBehaviour>();
+                var mstbhv = other.GetComponent<IDamageable>();
                 if (mstbhv == null) return;
-                if(hitAudioClip) SoundEffectManager.Instance.PlaySound(hitAudioClip, mstbhv.gameObject);
+                if (mstbhv is MonsterBehaviour behaviour)
+                {
+                    if(hitAudioClip) SoundEffectManager.Instance.PlaySound(hitAudioClip, behaviour.gameObject);
+                }
                 mstbhv.TakeDamage(damage);
                 // Debug.Log("Hit" + other.name + "dmg = "+ damage);
                 // ThisPool.Release(gameObject);
