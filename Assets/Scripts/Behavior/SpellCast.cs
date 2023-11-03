@@ -24,6 +24,7 @@ namespace Behavior
         [SerializeField] private KeyCode ExtremeColdKey = KeyCode.Mouse1;
         [SerializeField] private KeyCode GoldenBellKey = KeyCode.R;
         [SerializeField] private KeyCode ULTKey = KeyCode.Q;
+        [SerializeField] private float basicMindcontrolDuration = 12f;
 
 
         private void Awake(){
@@ -302,7 +303,8 @@ namespace Behavior
             {
                 if (state.ConsumeEnergy(0.02f*state.CurrentEnergy))
                 {
-                    e.GetComponent<MonsterBehaviour>().ActivateSelfKillMode(16);
+                    var eMstbhv = e.GetComponent<MonsterBehaviour>();
+                    if(eMstbhv != null) eMstbhv.ActivateSelfKillMode(basicMindcontrolDuration + state.GetCurrentLevel() * 0.1f);
                 }
             }
         }
