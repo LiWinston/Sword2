@@ -788,6 +788,7 @@ MonoBehaviour:
   ExtremeColdKey: 324
   GoldenBellKey: 114
   ULTKey: 113
+  basicMindcontrolDuration: 12
 --- !u!195 &6507685321940979291
 NavMeshAgent:
   m_ObjectHideFlags: 0
