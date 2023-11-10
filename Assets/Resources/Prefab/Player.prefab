@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 2007897275112994830}
   - component: {fileID: 2944923949687073834}
   - component: {fileID: 1980264982740591841}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: PlayerHUD
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -427,7 +427,7 @@ MonoBehaviour:
   effectBarStartPos: {fileID: 1301686439504549740}
   effectBarSpacing: 0.05625
   effectBarOffset: 0.01
-  startPosOffset: {x: 0, y: -0.23, z: 0}
+  startPosOffset: {x: 0, y: 0.08, z: 0}
   transformNormalizer: {x: 0.05, y: 0.05, z: 0.05}
 --- !u!114 &6770313562260628058
 MonoBehaviour:
@@ -441,7 +441,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9012ec7ec793c144f9f905436e3a3714, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Name: "\u7267\u91CE\u6D41\u661F"
+  Name: MeadowMeteor
   prefab: {fileID: 4084828893074943605, guid: f4375c2a167ed8a40ad845b0ee29c9b7, type: 3}
   generatingOffset: {x: 0, y: 0.3, z: 0}
   defaultCapacity: 100
@@ -505,7 +505,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9012ec7ec793c144f9f905436e3a3714, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Name: "\u707C\u70E7"
+  Name: Fire
   prefab: {fileID: 2353437418114724401, guid: 94a90d9048561e54da97e6c52674da07, type: 3}
   generatingOffset: {x: 0, y: 0.7, z: 0}
   defaultCapacity: 4
@@ -565,7 +565,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9012ec7ec793c144f9f905436e3a3714, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Name: "\u9B42\u7275\u68A6\u8426"
+  Name: PersistentReverie
   prefab: {fileID: 5633851335140538449, guid: ed076578aada9594d8d65138fa81b028, type: 3}
   generatingOffset: {x: 0, y: 0.4, z: 0}
   defaultCapacity: 6
@@ -738,16 +738,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc327f1ef722365468467861957eeb61, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 500
-  currentHealth: 500
-  addHealthOnUpdate: 50
-  addMaxHealthOnUpdate: 25
-  maxEnergy: 200
-  currentEnergy: 200
-  addEnergyOnUpdate: 33
-  addMaxEnergyOnUpdate: 16
-  maxPower: 100
-  currentPower: 100
+  maxHealth: 1000
+  currentHealth: 1000
+  addHealthOnUpdate: 100
+  addMaxHealthOnUpdate: 100
+  maxEnergy: 1400
+  currentEnergy: 1400
+  addEnergyOnUpdate: 220
+  addMaxEnergyOnUpdate: 220
+  maxPower: 150
+  currentPower: 95
   powerRegenerationRate: 0.05
   currentExperience: 0
   damageReduction: 0
@@ -758,8 +758,8 @@ MonoBehaviour:
   energyRegenerationRate: 0.008
   healthRegenAddition: 0.02
   energyRegenAddition: 0.07
-  curDamage: 60
-  addDamageOnUpdate: 35
+  curDamage: 90
+  addDamageOnUpdate: 55
   HurricaneKickDamage: 70
   hurricaneKickKnockbackForce: 30
   hurricaneKickRange: 1.8
@@ -784,7 +784,7 @@ MonoBehaviour:
   spellingPartTransform: {fileID: 5496938358071925957}
   innerSpellingTransform: {fileID: 0}
   spellRange: 4
-  JZZCostRate: 0.2
+  JZZCostRate: 0.15
   ExtremeColdKey: 324
   GoldenBellKey: 114
   ULTKey: 113
