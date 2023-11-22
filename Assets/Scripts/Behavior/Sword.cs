@@ -43,6 +43,10 @@ namespace Behavior
 
         private void Update()
         {
+            if (Time.time - lastAttackTime > comboResetTime)
+            {
+                comboCount = 0; // 连击计时超过阈值，重置连击计数器
+            }
             if (!animator) animator = pCtrl.GetAnimator();
         }
 
@@ -65,7 +69,45 @@ namespace Behavior
         private void HandleAttackEnded()
         {
             animator.SetBool("isAttacking", false);
+            comboCount += hitEnemies.Count; // 更新连击计数器
+            lastAttackTime = Time.time; // 记录最近一次攻击时间
             hitEnemies.Clear();
+            CheckVampiricMode(); // 检查吸血模式
+        }
+        
+        private void CheckVampiricMode()
+        {
+            if (State.State_VampiricMode.None == State.Instance.StateVampiricMode)
+            {
+                if (comboCount > comboThreshold)
+                {
+                    // 进入 default 模式
+                    State.Instance.StateVampiricMode = State.State_VampiricMode.Default;
+                    pCtrl._effectTimeManager.CreateEffectBar("VampiricMode", new Color(255, 102, 51), comboResetTime);
+                    UIManager.Instance.ShowMessage1("Entered Default Vampiric Mode");
+                }
+            }else
+            {
+                if (comboCount > comboThreshold + 7)
+                {
+                    // 进入 Violent 模式
+                    State.Instance.StateVampiricMode = State.State_VampiricMode.Violent;
+                    var time = PlayerController.Instance._effectTimeManager.GetEffectProgress("VampiricMode") * comboResetTime;
+                    PlayerController.Instance._effectTimeManager.StopEffect("VampiricMode");
+                    pCtrl._effectTimeManager.CreateEffectBar("VampiricMode", Color.red, time + 3f);
+                }
+                if (comboCount > comboThreshold + 4)
+                {
+                    // 进入 Focused 模式
+                    State.Instance.StateVampiricMode = State.State_VampiricMode.Focused;
+                    var time = PlayerController.Instance._effectTimeManager.GetEffectProgress("VampiricMode") * comboResetTime;
+                    PlayerController.Instance._effectTimeManager.StopEffect("VampiricMode");
+                    pCtrl._effectTimeManager.CreateEffectBar("VampiricMode", Color.yellow, time + 2f);
+                }
+            }
+
+            // 其他逻辑，根据 comboCount 更新吸血模式和吸血计时器
+            // ...
         }
 
         public void BehaviourOnHolderDie()
@@ -73,7 +115,6 @@ namespace Behavior
             if(hasDoneDieBehaviour) return;
             hasDoneDieBehaviour = true;
             StartCoroutine(SwordOffHand());
-
         }
 
         private IEnumerator SwordOffHand()

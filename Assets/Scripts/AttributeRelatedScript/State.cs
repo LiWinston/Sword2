@@ -118,22 +118,20 @@ namespace AttributeRelatedScript
         private float zenModeP2EConversionSpeed; // 禅模式下的体力转化率
         private PlayerController plyctl;
         private static readonly int IsCrouching = Animator.StringToHash("isCrouching");
-
-        [Header("VampiricMode")] 
-        [SerializeField] private float vampiricRate = 0.005f;
-        public enum VampiricMode
-        {
-            None, Default, Focused, Violent
-        }
-
-        internal VampiricMode vampiricMode;
-        
-        
         public delegate void EnterZenModeEventHandler();
         public event EnterZenModeEventHandler OnEnterZenMode;
         public delegate void ExitZenModeEventHandler();
         public static event ExitZenModeEventHandler OnExitZenMode;
     
+        [Header("VampiricMode")] 
+        [SerializeField] private float vampiricRate = 0.005f;
+        public enum State_VampiricMode
+        {
+            None, Default, Focused, Violent
+        }
+
+        private State_VampiricMode _stateVampiricMode = State_VampiricMode.None;
+        
         //JZZ
         public bool isJZZ { get; set; }
         [SerializeField]internal float JZZReduceMutiplier = 1.5f;
@@ -270,7 +268,7 @@ namespace AttributeRelatedScript
             // OnExitZenMode += () => IconManager.Instance.HideIcon(IconManager.IconName.ZenMode);
 
             // OnExitZenMode += StopZenCoroutine;
-            vampiricMode = VampiricMode.None;
+            StateVampiricMode = State_VampiricMode.None;
         }
 
         // 初始化升级所需经验值数组
@@ -661,6 +659,8 @@ namespace AttributeRelatedScript
             StopCoroutine(ZenCoroutine);
         }
         internal bool IsInP2EConvertZenMode => isInP2EConvert_ZenMode;
+        
+
         private bool isInP2EConvert_ZenMode;
         
 
@@ -696,21 +696,49 @@ namespace AttributeRelatedScript
             isInP2EConvert_ZenMode = false;
         }
 
+        // public void SetVampiricMode(VampiricMode mode)
+        // {
+        //     // float comboResetTime = 
+        //     // // 更新吸血模式的效果条颜色和时长
+        //     // PlayerController.Instance._effectTimeManager.StopEffect("VampiricMode");
+        //     // PlayerController.Instance._effectTimeManager.CreateEffectBar("VampiricMode", GetVampiricModeColor(mode), comboResetTime);
+        // }
+        public State_VampiricMode StateVampiricMode
+        {
+            get => _stateVampiricMode;
+            set => _stateVampiricMode = value;
+        }
+
+        private Color GetVampiricModeColor(State_VampiricMode mode)
+        {
+            switch (mode)
+            {
+                case State_VampiricMode.Default:
+                    return new Color(255, 102, 51);
+                case State_VampiricMode.Focused:
+                    return Color.yellow;
+                case State_VampiricMode.Violent:
+                    return Color.red;
+                default:
+                    return Color.white;
+            }
+        }
+        
         public void MakeDamage(IDamageable obj, float dmg)
         {
             obj.TakeDamage(dmg);
             float vampiricValue = 0f;
-            switch (vampiricMode)
+            switch (StateVampiricMode)
             {
-                case VampiricMode.None:
+                case State_VampiricMode.None:
                     break;
-                case VampiricMode.Default:
+                case State_VampiricMode.Default:
                     vampiricValue = (dmg * vampiricRate);
                     break;
-                case VampiricMode.Focused:
+                case State_VampiricMode.Focused:
                     vampiricValue = (dmg * vampiricRate * 1.5f);
                     break;
-                case VampiricMode.Violent:
+                case State_VampiricMode.Violent:
                     vampiricValue = (dmg * vampiricRate * 2.25f);
                     break;
                 default:
