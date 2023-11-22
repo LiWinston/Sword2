@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using AttributeRelatedScript;
 using Behavior.Health;
 using UI;
 using UnityEngine;
@@ -14,6 +15,12 @@ namespace Behavior
         private HashSet<Collider> hitEnemies = new HashSet<Collider>();
         private int enemyLayer;
         private bool hasDoneDieBehaviour = false;
+        
+        [Header("Vampiric")] 
+        private int comboCount = 0;
+        private float lastAttackTime = 0f;
+        private const float comboResetTime = 8f;
+        private const int comboThreshold = 6;
 
         private void Start()
         {
@@ -43,13 +50,14 @@ namespace Behavior
         {
             if (!animator.GetBool("isAttacking") || other.gameObject.layer != enemyLayer || hitEnemies.Contains(other))
                 return;
-
-            HealthSystem healthSystem = other.GetComponent<HealthSystemComponent>()?.GetHealthSystem();
-            if (healthSystem != null)
+            
+            var idmgb = other.GetComponent<IDamageable>();
+            if (idmgb != null)
             {
                 var dmg = pCtrl.GetDamage();
                 UIManager.Instance.ShowMessage1("Made " + dmg + " Damage");
-                healthSystem.Damage(dmg); // Inflict damage on enemies
+                // idmgb.TakeDamage(dmg); // Inflict damage on enemies
+                State.Instance.MakeDamage(idmgb,dmg);
                 hitEnemies.Add(other); // 记录已攻击过的敌人
             }
         }

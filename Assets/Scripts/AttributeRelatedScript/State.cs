@@ -1,6 +1,8 @@
+using System;
 using System.Collections;
 using System.Linq;
 using Behavior;
+using Behavior.Health;
 using UI;
 using Unity.Mathematics;
 using Unity.VisualScripting;
@@ -10,7 +12,7 @@ using Utility;
 
 namespace AttributeRelatedScript
 {
-    public class State : MonoBehaviour
+    public class State : MonoBehaviour, IDamageMaker
     {
         private static State _instance;
         public static State Instance
@@ -117,6 +119,16 @@ namespace AttributeRelatedScript
         private PlayerController plyctl;
         private static readonly int IsCrouching = Animator.StringToHash("isCrouching");
 
+        [Header("VampiricMode")] 
+        [SerializeField] private float vampiricRate = 0.005f;
+        public enum VampiricMode
+        {
+            None, Default, Focused, Violent
+        }
+
+        internal VampiricMode vampiricMode;
+        
+        
         public delegate void EnterZenModeEventHandler();
         public event EnterZenModeEventHandler OnEnterZenMode;
         public delegate void ExitZenModeEventHandler();
@@ -258,6 +270,7 @@ namespace AttributeRelatedScript
             // OnExitZenMode += () => IconManager.Instance.HideIcon(IconManager.IconName.ZenMode);
 
             // OnExitZenMode += StopZenCoroutine;
+            vampiricMode = VampiricMode.None;
         }
 
         // 初始化升级所需经验值数组
@@ -550,6 +563,8 @@ namespace AttributeRelatedScript
                 OnLevelChanged(currentLevel);
             }
             // 将新的伤害减免比例应用到角色
+            //update vampricRate
+            vampiricRate *= 1.01f;
         }
 
         private void CheckInCombat()
@@ -647,6 +662,7 @@ namespace AttributeRelatedScript
         }
         internal bool IsInP2EConvertZenMode => isInP2EConvert_ZenMode;
         private bool isInP2EConvert_ZenMode;
+        
 
         private IEnumerator P2EConvert_ZenMode()
         {
@@ -678,6 +694,30 @@ namespace AttributeRelatedScript
                 yield return null;
             }
             isInP2EConvert_ZenMode = false;
+        }
+
+        public void MakeDamage(IDamageable obj, float dmg)
+        {
+            obj.TakeDamage(dmg);
+            float vampiricValue = 0f;
+            switch (vampiricMode)
+            {
+                case VampiricMode.None:
+                    break;
+                case VampiricMode.Default:
+                    vampiricValue = (dmg * vampiricRate);
+                    break;
+                case VampiricMode.Focused:
+                    vampiricValue = (dmg * vampiricRate * 1.5f);
+                    break;
+                case VampiricMode.Violent:
+                    vampiricValue = (dmg * vampiricRate * 2.25f);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+            Heal(vampiricValue);
+            UIManager.Instance.ShowMessage1("Vampired " + vampiricValue + " Health");
         }
     }
 }

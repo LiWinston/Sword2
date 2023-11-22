@@ -90,7 +90,7 @@ namespace Behavior
         private float originalAttackCooldownInterval;
         private float originalMaxPlySpeed;
         Transform spineTransform;
-        private EffectTimeManager _effectTimeManager;
+        internal EffectTimeManager _effectTimeManager;
         
         public bool IsCrouching
         {
