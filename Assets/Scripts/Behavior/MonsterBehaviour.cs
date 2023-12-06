@@ -263,11 +263,11 @@ namespace Behavior
             {
                 animator.SetBool("Near",true);
             }
-            var directionToPly = target.transform.position - transform.position;
-            directionToPly.y = 0;
-            directionToPly.Normalize();
-            Quaternion targetRotation = Quaternion.LookRotation(directionToPly);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.fixedDeltaTime);
+            // var directionToPly = target.transform.position - transform.position;
+            // directionToPly.y = 0;
+            // directionToPly.Normalize();
+            // Quaternion targetRotation = Quaternion.LookRotation(directionToPly);
+            // transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.fixedDeltaTime);
         }
         
         private GameObject PickAlly()
