@@ -2,14 +2,7 @@
 
 # Project 2 Report
 
-Read the [project 2
-specification](https://github.com/COMP30019/Project-2-Specification) for
-details on what needs to be covered here. You may modify this template as you see fit, but please
-keep the same general structure and headings.
-
-Remember that you must also continue to maintain the Game Design Document (GDD)
-in the `GDD.md` file (as discussed in the specification). We've provided a
-placeholder for it [here](GDD.md).
+Deploy: https://comp30019.github.io/project-2-infinitegame-studio/
 
 ## Table of Contents
 
