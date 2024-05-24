@@ -3,6 +3,7 @@
 # Project 2 Report
 
 Deploy: https://comp30019.github.io/project-2-infinitegame-studio/
+(Online deploy seems problematic on L/R(A/D) control, for full experience please find release.
 
 ## Table of Contents
 
