@@ -373,63 +373,39 @@ namespace Behavior
                 }
             }
 
+// 移动方向处理
             Vector3 moveDirection = Vector3.zero;
+            if (Input.GetKey(KeyCode.W)) moveDirection += transform.forward * 1f;
+            if (Input.GetKey(KeyCode.S)) moveDirection -= transform.forward * 0.7f;
+            if (Input.GetKey(KeyCode.A)) moveDirection -= transform.right * 0.7f;
+            if (Input.GetKey(KeyCode.D)) moveDirection += transform.right * 0.7f;
 
-            if (Input.GetKey(KeyCode.W))
-            {
-                moveDirection += transform.forward * 1f;
-            }
-            if (Input.GetKey(KeyCode.S))
-            {
-                moveDirection -= transform.forward * 0.7f;
-            }
-            if (Input.GetKey(KeyCode.A))
-            {
-                moveDirection -= transform.right * 0.7f;
-            }
-            if (Input.GetKey(KeyCode.D))
-            {
-                moveDirection += transform.right * 0.7f;
-            }
-
-            if (moveDirection.magnitude > 2f)
+            // 归一化移动向量，避免速度累加过大
+            if (moveDirection.magnitude > 1f)
             {
                 moveDirection.Normalize();
             }
-        
-            if (Input.GetKey(KeyCode.LeftShift))
+
+            // 冲刺逻辑
+            if (Input.GetKey(KeyCode.LeftShift) && moveDirection != Vector3.zero && state.ConsumePower(4 * Time.deltaTime))
             {
-                if (Vector3.zero != moveDirection)
-                {
-                    if(state.ConsumePower(4 * Time.deltaTime))
-                    {
-                        IconManager.Instance.ShowIcon(IconManager.IconName.Sprint);
-                        float sprintSpeed = sprintSpeedRate * (isCrouching ? MaxCrouchPlySpeed : MaxPlySpeed) * (isFrozen ? 0.6f : 1f);
-                        var v = moveDirection * sprintSpeed;
-                        rb.velocity = new Vector3(v.x,rb.velocity.y , v.z);
-                        // IconManager.Instance.HideIcon(IconManager.IconName.Sprint);
-                        return;
-                    }
-                }
+                IconManager.Instance.ShowIcon(IconManager.IconName.Sprint);
+                float sprintSpeed = sprintSpeedRate * (isCrouching ? MaxCrouchPlySpeed : MaxPlySpeed) * (isFrozen ? 0.6f : 1f);
+                var v = moveDirection * sprintSpeed;
+                rb.velocity = new Vector3(v.x, rb.velocity.y, v.z);
+                return;  // 若冲刺则跳出，停止普通移动的逻辑
             }
 
+            // 恢复常态移动
             if (Input.GetKeyUp(KeyCode.LeftShift))
             {
                 IconManager.Instance.HideIcon(IconManager.IconName.Sprint);
             }
-            // current lo
-            moveForceTimerCounter -= Time.deltaTime;
-            if (!(moveForceTimerCounter <= 0))
-            {
-                return;
-            }
 
-            moveForceTimerCounter += moveForceTimer;
-            var f = isCrouching ? crouchForceRate * forwardForce : forwardForce;
-
-            rb.AddForce(moveDirection * f, ForceMode.Force);
-            float maxSpeed = isCrouching ? MaxCrouchPlySpeed : MaxPlySpeed;
-            rb.velocity = Vector3.ClampMagnitude(rb.velocity, maxSpeed);
+            // 非冲刺情况下的普通移动
+            float normalSpeed = isCrouching ? MaxCrouchPlySpeed : MaxPlySpeed;
+            var normalVelocity = moveDirection * normalSpeed;
+            rb.velocity = new Vector3(normalVelocity.x, rb.velocity.y, normalVelocity.z);
         }
 
         public bool _isDead { get; set; }
