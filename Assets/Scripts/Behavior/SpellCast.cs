@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using AttributeRelatedScript;
 using Behavior.Effect;
 using Behavior.Health;
+using Game;
 using UI;
 using UnityEngine;
 using Utility;
@@ -245,10 +246,16 @@ namespace Behavior
 
         // 协程来实现持续掉血
 
+        
+        private float getUltEnergyConsumption()
+        {
+            if(GameSceneManager.Instance.IsFinalBattle) return state.maxEnergy * 0.1f;
+            return state.CurrentDamage * 1.5f;
+        }
     
         private void CastUlt()
         {
-            if (!state.ConsumeEnergy(state.CurrentDamage * 1.5f))
+            if (!state.ConsumeEnergy(getUltEnergyConsumption()))
             {
                 return;
             };
@@ -301,7 +308,8 @@ namespace Behavior
             yield return new WaitForSeconds(1.4f);
             foreach (var e in enemies)
             {
-                if (state.ConsumeEnergy(0.02f*state.CurrentEnergy))
+                
+                if (state.ConsumeEnergy(0.015f*e.GetComponent<HealthSystemComponent>().GetHealthSystem().GetHealth()))
                 {
                     var eMstbhv = e.GetComponent<MonsterBehaviour>();
                     if(eMstbhv != null) eMstbhv.ActivateSelfKillMode(basicMindcontrolDuration + state.GetCurrentLevel() * 0.1f);

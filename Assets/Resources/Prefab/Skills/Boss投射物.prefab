@@ -48,10 +48,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8509cc452f50cfd4c8f80526451a4de0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rotateSpeed: 50
-  projectileSpeed: 10
+  rotateSpeed: 43.7
+  projectileSpeed: 12.98
   _monsterBehaviour: {fileID: 0}
-  maxExistTime: 5
+  maxExistTime: 5.61
 --- !u!136 &8098975487059622607
 CapsuleCollider:
   m_ObjectHideFlags: 0

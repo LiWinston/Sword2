@@ -77,6 +77,20 @@ namespace UI.OffScreenIndicator
         {
             transform.gameObject.SetActive(value);
         }
+        
+        public void SetVisible(bool isVisible)
+        {
+            if (indicatorImage != null)
+            {
+                var color = indicatorImage.color;
+                color.a = isVisible ? 1f : 0f;
+                indicatorImage.color = color;
+            }
+            if (distanceText != null)
+            {
+                distanceText.enabled = isVisible;
+            }
+        }
     }
 
     public enum IndicatorType

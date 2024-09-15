@@ -15,6 +15,7 @@ using State = AttributeRelatedScript.State;
 using Target = UI.OffScreenIndicator.Target;
 using AttributeRelatedScript;
 using System.Linq;
+using Game;
 
 namespace Behavior
 {
@@ -262,12 +263,15 @@ namespace Behavior
             if (curDistance <= aimDistance) //追击距离内
             {
                 animator.SetBool("Near",true);
+            } 
+            if(!IsInSelfKill)
+            {
+               var directionToPly = target.transform.position - transform.position;
+               directionToPly.y = 0;
+               directionToPly.Normalize();
+               Quaternion targetRotation = Quaternion.LookRotation(directionToPly);
+               transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.fixedDeltaTime);
             }
-            var directionToPly = target.transform.position - transform.position;
-            directionToPly.y = 0;
-            directionToPly.Normalize();
-            Quaternion targetRotation = Quaternion.LookRotation(directionToPly);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.fixedDeltaTime);
         }
         
         private GameObject PickAlly()
@@ -392,15 +396,17 @@ namespace Behavior
             if (isBoss)
             {
                 //TODO : boss的等级和经验值
-                monsterLevel = 75;
-                health.SetHealthMax(1200000, true);
+                monsterLevel = 100;
+                health.SetHealthMax(9900000, true);
                 monsterExperience = 9999;
-                minAttackPower = 18;
-                maxAttackPower = 36f;
+                minAttackPower = 36;
+                maxAttackPower = 240f;
                 return;
             }
             // 计算怪物等级，使其在五分钟内逐渐增长到最大等级
-            float maxGameTime = 300f; // 300秒
+            //全局找timer（在canvas上）
+            var timer = FindObjectOfType<GameSceneManager>();
+            float maxGameTime = timer.totalGameSeconds - timer.finalBattleSeconds;
             float progress = Mathf.Clamp01(Time.timeSinceLevelLoad / maxGameTime); // 游戏时间进度（0到1之间）
             monsterLevel = progress * 100 + 1; // 从1到100逐渐增长
             monsterExperience = Mathf.FloorToInt(monsterLevel * 1.2f);
@@ -474,6 +480,7 @@ namespace Behavior
             // Debug.Log("SelfKillMode Activated");
             _effectTimeManager.StopEffect("SelfKill");
             _effectTimeManager.CreateEffectBar("SelfKill", Color.white, time);
+            if(isBoss) GetComponent<Target>().indicator.SetVisible(false);
             // Debug.Log("SelfKill timerCpn Activated");
         }
 
@@ -481,9 +488,9 @@ namespace Behavior
         {
             IsInSelfKill = false;
             _effectTimeManager.StopEffect("SelfKill");
-            GetComponent<Target>().NeedBoxIndicator = false;
             MaxSpeed = originalMaxMstSpeed;
             if(!selfKillCoroutine.IsUnityNull()) StopCoroutine(selfKillCoroutine);
+            if(isBoss) GetComponent<Target>().indicator.SetVisible(true);
         }
         public Coroutine selfKillCoroutine { get; set; }
 

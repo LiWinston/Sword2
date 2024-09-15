@@ -9,6 +9,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
+using Utility;
 
 namespace Game
 {
@@ -25,8 +26,8 @@ namespace Game
         public AudioSource BGM;
 
         public GameObject stuffGenerator;
-        [SerializeField] private float totalGameSeconds = 310;
-        [SerializeField] private float finalBattleSeconds = 75;
+        [SerializeField] public float totalGameSeconds = 310;
+        [SerializeField] public float finalBattleSeconds = 75;
         private float finalBattleStartTimeStamp = 0f;
 
         private static GameSceneManager instance;
@@ -65,15 +66,20 @@ namespace Game
             startTime = Time.timeSinceLevelLoad;
             if(!lookat) lookat = GameObject.Find("SM_Prop_Table_04").transform;
             var random = Random.Range(0f, 1f);
-            if (random < 0.33f)
+            if (random < 0.25f)
             {
-                BGM.clip = Resources.Load<AudioClip>("Music/haunted_house");
-                BGMSeries = "Horror";
+                BGM.clip = Resources.Load<AudioClip>("Music/酣战");
+                BGMSeries = "武林";
             }
-            else if (random < 0.66f)
+            else if (random < 0.50f)
             {
                 BGM.clip = Resources.Load<AudioClip>("Music/史诗");
                 BGMSeries = "Epic";
+            }
+            else if (random < 0.75f)
+            {
+                BGM.clip = Resources.Load<AudioClip>("Music/战斗");
+                BGMSeries = "Fantasy";
             }
             else if (random < 1f)
             {
@@ -89,7 +95,6 @@ namespace Game
         
         private void Update()
         {
-           
             if (!gameEnded)
             {
                 // update remaining time
@@ -105,27 +110,44 @@ namespace Game
                     RemainingTime = finalBattleSeconds - (Time.timeSinceLevelLoad - finalBattleStartTimeStamp);
                     UpdateTimerText(RemainingTime);
                 }
+
                 if (RemainingTime <= 0f)
-                {
                     // _realElapsedTime = -1f;
                     // 游戏胜利，加载WinScene场景
                     LoadWinScene();
-                }
 
                 if (_realElapsedTime >= totalGameSeconds - finalBattleSeconds || Input.GetKey("`"))
-                {
                     if (!IsFinalBattle)
                     {
                         //Stop Generating normal mst
-                        stuffGenerator.GetComponents<Component>().OfType<PrefabGenerator>().FirstOrDefault(pg => pg.prefab.name == "MST")!.maxCapacity = 0;
-                        stuffGenerator.GetComponents<Component>().OfType<PrefabGenerator>().FirstOrDefault(pg => pg.prefab.name == "蓝包_EnergySupplyItem")!.maxCapacity = 0;
-                        stuffGenerator.GetComponents<Component>().OfType<PrefabGenerator>().FirstOrDefault(pg => pg.prefab.name == "血包_HealthSupplyItem")!.maxCapacity = 0;
-                        stuffGenerator.GetComponents<Component>().OfType<PrefabGenerator>().FirstOrDefault(pg => pg.prefab.name == "DamageIncreaseItem")!.maxCapacity = 0;
+                        stuffGenerator.GetComponents<Component>().OfType<PrefabGenerator>()
+                            .FirstOrDefault(pg => pg.prefab.name == "MST")!.maxCapacity = 0;
+                        stuffGenerator.GetComponents<Component>().OfType<PrefabGenerator>()
+                            .FirstOrDefault(pg => pg.prefab.name == "蓝包_EnergySupplyItem")!.maxCapacity = 0;
+                        stuffGenerator.GetComponents<Component>().OfType<PrefabGenerator>()
+                            .FirstOrDefault(pg => pg.prefab.name == "血包_HealthSupplyItem")!.maxCapacity = 0;
+                        stuffGenerator.GetComponents<Component>().OfType<PrefabGenerator>()
+                            .FirstOrDefault(pg => pg.prefab.name == "DamageIncreaseItem")!.maxCapacity = 0;
 
-                        PlayerController.Instance.GetComponents<Component>().OfType<RemoteSpelling>().FirstOrDefault(rs => rs.Name == "MeadowMeteor")!.isCosumingEnegyProportionally = false;
-                        // PlayerController.Instance.GetComponents<Component>().OfType<RemoteSpelling>().FirstOrDefault(rs => rs.Name == "魂牵梦萦")!.isAmountUpdatedWithLevel = true;
-                        // PlayerController.Instance.GetComponents<Component>().OfType<RemoteSpelling>().FirstOrDefault(rs => rs.Name == "魂牵梦萦")!.maxAngle_SingleSide = 10f;
+                        var spellCast = PlayerController.Instance.GetComponent<SpellCast>();
                         
+                        
+                        // PlayerController.Instance.GetComponents<Component>().OfType<RemoteSpelling>().FirstOrDefault(rs => rs.Name == "MeadowMeteor")!.isCosumingEnegyProportionally = false;
+                        var meadowMeteor = PlayerController.Instance.GetComponents<Component>()
+                            .OfType<RemoteSpelling>()
+                            .FirstOrDefault(rs => rs.Name == "MeadowMeteor");
+
+                        if (meadowMeteor != null)
+                        {
+                            meadowMeteor.maxAngle_SingleSide = 28f;
+                            meadowMeteor.isCosumingEnegyProportionally = false;
+                            meadowMeteor.prefab.GetComponent<RemoteThrowingsBehavior>()._energyCost = 7500f;
+                            var fb = Find.FindDeepChild(meadowMeteor.prefab.transform, "frameBall");
+                            var ps = fb.GetComponent<ParticleSystem>();
+                            var main = ps.main;
+                            main.startColor = new Color(0.2f, 0.7f, 0.2f, 1f);
+                        }
+
                         var bouncePersistentReverie = PlayerController.Instance.GetComponents<Component>()
                             .OfType<RemoteSpelling>()
                             .FirstOrDefault(rs => rs.Name == "PersistentReverie");
@@ -133,27 +155,27 @@ namespace Game
                         if (bouncePersistentReverie != null)
                         {
                             bouncePersistentReverie.isAmountUpdatedWithLevel = true;
-                            bouncePersistentReverie.maxAngle_SingleSide = 5f;
+                            bouncePersistentReverie.maxAngle_SingleSide = 15f;
                             bouncePersistentReverie.isCosumingEnegyProportionally = false;
-                            bouncePersistentReverie.prefab.GetComponent<RemoteThrowingsBehavior>()._energyCost = 800f;
+                            bouncePersistentReverie.prefab.GetComponent<RemoteThrowingsBehavior>()._energyCost = 10000f;
                         }
 
+
+                        var jzz = PlayerController.Instance.GetComponent<SpellCast>();
+                        jzz.JZZCostRate = 0.25f;
                         
-                        PlayerController.Instance.GetComponent<SpellCast>().JZZCostRate = 0.12f;
-                        
-                        GameObject boosPrfb = Resources.Load<GameObject>("Prefab/BossSpawner");
+
+                        var boosPrfb = Resources.Load<GameObject>("Prefab/BossSpawner");
                         if (boosPrfb == null) Debug.LogError("NO BossGenerator");
                         var boosPrfbi = Instantiate(boosPrfb, lookat.position + Vector3.up, Quaternion.identity);
-                        
+
                         // End of Game
                         PlayerController.Instance.ShowPlayerHUD("The Elder is awakening!!");
                         StartCoroutine(TeleportPlayerToFloorLarge());
                         PlayerController.Instance.state.CurrentHealth = PlayerController.Instance.state.maxHealth;
                         PlayerController.Instance.state.CurrentEnergy = PlayerController.Instance.state.maxEnergy;
                         PlayerController.Instance.state.CurrentPower = PlayerController.Instance.state.maxPower;
-                        
                     }
-                }
             }
         }
 
@@ -207,7 +229,7 @@ namespace Game
             if(!BGM) BGM = GameObject.Find("BGM").GetComponent<AudioSource>();
             BGM.clip = BGMSeries switch
                 {
-                    "Horror" => Resources.Load<AudioClip>("Music/final_boss"),
+                    "武林" => Resources.Load<AudioClip>("Music/武林"),
                     "Epic" => Resources.Load<AudioClip>("Music/史诗_战斗"),
                     "Fantasy" => Resources.Load<AudioClip>("Music/幻境_战斗"),
                     _ => BGM.clip
