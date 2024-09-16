@@ -2,9 +2,8 @@
 
 # Project 2 Report
 
-Deploy(404now): https://comp30019.github.io/project-2-infinitegame-studio/
-(Online deploy seems problematic on L/R(A/D) control, for full experience please find release.
-(Reminder for render : WebBuild is supposed to be the build folder for unity, not the root folder)
+* Deploy : https://bitsleep.cn/my/recentWorks/sword
+* (Reminder for render : WebBuild is supposed to be the build folder for unity, not the root folder)
 
 ## Table of Contents
 
